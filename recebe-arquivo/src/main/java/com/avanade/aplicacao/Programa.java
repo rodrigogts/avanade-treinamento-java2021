@@ -1,12 +1,10 @@
 package com.avanade.aplicacao;
 
 import com.avanade.aplicacao.servicos.ServicoProcessarArquivos;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Programa {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Programa.class);
 
     public static void main(String[] args) {
 
@@ -18,7 +16,7 @@ public class Programa {
             return;
         }
 
-        LOG.info("Iniciando aplicação..");
+        log.info("Iniciando aplicação..");
         Programa programa = new Programa();
         programa.iniciar(args[0]);
     }
