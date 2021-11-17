@@ -13,6 +13,7 @@ public class PedidoModel {
     private Integer codigo;
     private ClienteModel cliente;
     private BigDecimal valorTotal;
+    private String numeroCartao;
     private Date data;
     private List<ItemModel> itens;
 
