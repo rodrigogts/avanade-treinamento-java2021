@@ -28,18 +28,46 @@ public class PedidoDao {
         return DriverManager.getConnection(url, props);
     }
 
-    public PedidoModel inserir(PedidoModel pedido) {
+    public Optional<PedidoModel> inserir(PedidoModel pedido) throws SQLException {
 
-        return pedido;
+        // TODO Se pedido já exisistir, chamar o método atualizar(PedidoModel pedido)
+        StringBuilder sb = new StringBuilder();
+        sb.append("insert into pedidos  ");
+        sb.append("     ( codigo ");
+        sb.append("     , codigo_cliente ");
+        sb.append("     , valor_total ");
+        sb.append("     , numero_cartao ");
+        sb.append("     , data )");
+        sb.append("values ");
+        sb.append("     ( ? ");
+        sb.append("     , ? ");
+        sb.append("     , ? ");
+        sb.append("     , ? ");
+        sb.append("     , ? )");
+
+        int idx = 1;
+        PreparedStatement pst = connection.prepareStatement(sb.toString());
+        pst.setInt(idx++, pedido.getCodigo());
+        pst.setInt(idx++, pedido.getCliente().getCodigo());
+        pst.setBigDecimal(idx++, pedido.getValorTotal());
+        pst.setString(idx++, pedido.getNumeroCartao());
+        pst.setDate(idx, (java.sql.Date)pedido.getData());
+
+        int qtdLinhas = pst.executeUpdate();
+        if (qtdLinhas == 0) {
+            throw new SQLException("Nenhum registro inserido para o pedido []");
+        }
+
+        return Optional.of(pedido);
     }
 
-    public PedidoModel atualizar(PedidoModel pedido) {
-
-        return pedido;
+    public Optional<PedidoModel> atualizar(PedidoModel pedido) {
+        return Optional.empty();
     }
 
     public Optional<PedidoModel> buscaPorCodigo(Integer codigoQry) throws SQLException {
 
+        // TODO Criar tabela cliente e relacionar com pedido
         StringBuilder sb = new StringBuilder();
         sb.append("select codigo ");
         sb.append("     , codigo_cliente ");
@@ -47,16 +75,18 @@ public class PedidoDao {
         sb.append("     , numero_cartao ");
         sb.append("     , data ");
         sb.append("  from pedidos ");
-        sb.append(" where codigo = " + codigoQry);
+        sb.append(" where codigo = ?");
 
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery(sb.toString());
+        int idx = 1;
+        PreparedStatement pst = connection.prepareStatement(sb.toString());
+        pst.setInt(idx, codigoQry);
+
+        ResultSet rs = pst.executeQuery();
 
         if (!rs.next()) {
             return Optional.empty();
         }
 
-        int idx = 1;
         Integer codigo = rs.getInt(idx++);
         Integer codigoCliente = rs.getInt(idx++);
         BigDecimal valorTotal = rs.getBigDecimal(idx++);

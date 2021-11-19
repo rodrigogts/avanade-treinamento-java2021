@@ -49,16 +49,23 @@ public class ServicoProcessarArquivos {
             }
 
             log.info("Encontrados [{}] pedidos no arquivo {}", pedidos.size(), caminhoArquivo);
+            pedidos.forEach(pedido -> {
+                try {
+                    pedidoDao.inserir(pedido);
+                    // TODO Inserir itens, criar o DAO dos itens e fazer o insert
 
-            // TODO Gravar no banco de dados
+                    Optional<PedidoModel> novoPedido = pedidoDao.buscaPorCodigo(pedido.getCodigo());
+                    if (novoPedido.isEmpty()) {
+                        throw new SQLException("Pedido não incluído, verifique seus dados");
+                    }
+
+                } catch (SQLException ex) {
+                    log.error("Falha ao inserir pedido no banco [{}]", pedido, ex);
+                    // TODO Gerar lista de erro e criar um arquivo
+                }
+
+            });
         });
-
-        try {
-            Optional<PedidoModel> pedidos = pedidoDao.buscaPorCodigo(5877);;
-            System.out.println(pedidos);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
 }
